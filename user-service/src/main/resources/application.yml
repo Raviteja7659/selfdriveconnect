@@ -1,0 +1,56 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:postgresql://localhost:5433/sdc_user_db
+    username: sdc_user
+    password: sdc_pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+# JWT config
+# IMPORTANT: this secret is for LOCAL DEV only. In a real deployment,
+# this must come from an environment variable or secret manager
+# (K8s Secret, AWS Secrets Manager, etc.) — never committed to git.
+jwt:
+  secret: "sdc-local-dev-secret-key-change-me-before-any-real-deployment-32chars+"
+  expiration-ms: 86400000   # 24 hours
+
+# One-time secret used by POST /api/v1/auth/bootstrap-admin to create
+# the platform's very first ADMIN account. Self-disables permanently
+# once any admin exists (see AuthService.bootstrapAdmin).
+# IMPORTANT: local-dev placeholder only — override via env var
+# (ADMIN_BOOTSTRAP_SECRET) in any real deployment, never commit a
+# real secret to git.
+admin:
+  bootstrap-secret: "${ADMIN_BOOTSTRAP_SECRET:sdc-local-bootstrap-secret-change-me}"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+
+logging:
+  level:
+    com.selfdriveconnect: DEBUG
+    org.springframework.security: DEBUG

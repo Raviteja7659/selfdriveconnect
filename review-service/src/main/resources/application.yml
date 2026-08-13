@@ -1,0 +1,55 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: review-service
+  datasource:
+    url: jdbc:postgresql://localhost:5433/sdc_review_db
+    username: sdc_user
+    password: sdc_pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+# Must match user-service's jwt.secret exactly — this service only
+# VALIDATES tokens issued by user-service, it never issues its own.
+jwt:
+  secret: "sdc-local-dev-secret-key-change-me-before-any-real-deployment-32chars+"
+
+# URL of booking-service — hardcoded for local dev.
+booking-service:
+  url: http://localhost:8083
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 3000
+        readTimeout: 5000
+        loggerLevel: basic
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+
+logging:
+  level:
+    com.selfdriveconnect: DEBUG

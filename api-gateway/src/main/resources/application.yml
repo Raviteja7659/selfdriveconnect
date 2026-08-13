@@ -1,0 +1,79 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      # Single CORS config here replaces the need for the frontend to
+      # know about — or be allowed by — five separate services. Each
+      # service's own CORS config (added earlier) still exists too,
+      # which is harmless and useful if you ever want to hit a service
+      # directly for testing.
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns:
+              - "http://localhost:5173"
+              - "http://127.0.0.1:5173"
+            allowedMethods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
+            allowedHeaders: "*"
+            allowCredentials: true
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+      routes:
+        - id: user-service
+          uri: ${services.user-service}
+          predicates:
+            - Path=/api/v1/auth/**,/api/v1/users/**
+
+        - id: vehicle-service
+          uri: ${services.vehicle-service}
+          predicates:
+            - Path=/api/v1/vehicles/**
+
+        - id: booking-service
+          uri: ${services.booking-service}
+          predicates:
+            - Path=/api/v1/bookings/**
+
+        - id: payment-service
+          uri: ${services.payment-service}
+          predicates:
+            - Path=/api/v1/payments/**
+
+        - id: review-service
+          uri: ${services.review-service}
+          predicates:
+            - Path=/api/v1/reviews/**
+
+# Backing service locations — hardcoded for local dev, same pattern
+# used by every Feign client elsewhere in this project. This is also
+# exactly where Eureka service discovery would plug in later, replacing
+# these fixed URLs with lookups by service name.
+services:
+  user-service: http://localhost:8082
+  vehicle-service: http://localhost:8086
+  booking-service: http://localhost:8083
+  payment-service: http://localhost:8084
+  review-service: http://localhost:8085
+
+# Must match every other service's jwt.secret exactly — the gateway
+# only validates signature/expiry, never issues tokens itself.
+jwt:
+  secret: "sdc-local-dev-secret-key-change-me-before-any-real-deployment-32chars+"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.selfdriveconnect: DEBUG
+    org.springframework.cloud.gateway: INFO

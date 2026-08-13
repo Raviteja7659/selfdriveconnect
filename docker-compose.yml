@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: sdc-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: sdc_user
+      POSTGRES_PASSWORD: sdc_pass
+      POSTGRES_DB: sdc_vehicle_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    networks:
+      - sdc-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: sdc-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@sdc.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - sdc-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: sdc-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - sdc-network
+
+volumes:
+  pgdata:
+
+networks:
+  sdc-network:
+    driver: bridge
