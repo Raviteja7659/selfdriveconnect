@@ -17,6 +17,14 @@ spring:
             allowedOriginPatterns:
               - "http://localhost:5173"
               - "http://127.0.0.1:5173"
+              - "http://cv1211.online"
+              - "https://cv1211.online"
+              - "http://cv1211.online:5173"
+              - "https://cv1211.online:5173"
+              - "http://*.cv1211.online"
+              - "https://*.cv1211.online"
+              - "http://*.cv1211.online:5173"
+              - "https://*.cv1211.online:5173"
             allowedMethods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
             allowedHeaders: "*"
             allowCredentials: true
