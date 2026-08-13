@@ -8,7 +8,7 @@ import axios from 'axios'
 // so e.g. vehicleApi.get('/api/v1/vehicles') and
 // bookingApi.get('/api/v1/bookings/1') both go to :8087 and get
 // forwarded to the right backend service from there.
-const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL || 'http://localhost:8087'
+const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL || 'http://cv1211.online:8087'
 
 function createClient(baseURL) {
   const client = axios.create({ baseURL })
